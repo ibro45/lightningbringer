@@ -3,12 +3,12 @@ from typing import Any
 from pathlib import Path
 
 import fire
-from monai.bundle.config_parser import ConfigParser
 from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.tuner import Tuner
 
 from lighter.system import System
 from lighter.utils.dynamic_imports import import_module_from_path
+from lighter.utils.patches import PatchedConfigParser as ConfigParser
 from lighter.utils.types import Mode, Stage
 
 

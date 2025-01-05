@@ -3,7 +3,7 @@ This module defines the System class, which encapsulates the components of a dee
 including the model, optimizer, datasets, and more. It extends PyTorch Lightning's LightningModule.
 """
 
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable
 
 from functools import partial
 
@@ -16,11 +16,11 @@ from torch.utils.data import Dataset
 from torch.utils.data._utils.collate import collate_str_fn, default_collate_fn_map
 from torchmetrics import Metric, MetricCollection
 
-from lighter.utils.misc import apply_fns, get_optimizer_stats, hasarg
+from lighter.utils.misc import get_optimizer_stats, hasarg
 from lighter.utils.patches import PatchedModuleDict
 from lighter.utils.types import Batch, Data, Mode
 
-# Patch the original collate function to allow None values in the batch. Done within the function to avoid global changes.
+# Patch the original collate function to allow None values in the batch.
 default_collate_fn_map.update({type(None): collate_str_fn})
 
 
@@ -35,29 +35,7 @@ class System(pl.LightningModule):
         criterion: Criterion (loss) function.
         metrics: Metrics for train, val, and test. Supports a single or a list/dict of `torchmetrics` metrics.
         dataloaders: Dataloaders for train, val, test, and predict.
-        postprocessing:
-            Functions to apply to:
-                1) The batch returned from the train/val/test/predict Dataset. Defined separately for each.
-                2) The input, target, or pred data prior to criterion/metrics/logging. Defined separately for each.
-
-            Follow this structure (all keys are optional):
-            ```
-                batch:
-                    train:
-                    val:
-                    test:
-                    predict:
-                criterion / metrics / logging:
-                    input:
-                    target:
-                    pred:
-            ```
-            Note that the postprocessing of a latter stage stacks on top of the prior ones - for example,
-            the logging postprocessing will be done on the data that has been postprocessed for the criterion
-            and metrics earlier.
-        inferer: Inferer to use in val/test/predict modes.
-            See MONAI inferers for more details: (https://docs.monai.io/en/stable/inferers.html).
-
+        inferer: Inferer to use in val/test/predict modes. See MONAI inferers: https://docs.monai.io/en/stable/inferers.html.
     """
 
     def __init__(
@@ -67,8 +45,7 @@ class System(pl.LightningModule):
         optimizer: Optimizer | None = None,
         scheduler: LRScheduler | None = None,
         criterion: Callable | None = None,
-        metrics: dict[str, Metric | List[Metric] | dict[str, Metric]] | None = None,
-        postprocessing: dict[str, Callable | List[Callable]] | None = None,
+        metrics: dict[str, Metric | list[Metric] | dict[str, Metric]] | None = None,
         inferer: Callable | None = None,
     ) -> None:
         super().__init__()
@@ -101,18 +78,16 @@ class System(pl.LightningModule):
             self.predict_dataloader = lambda: dataloaders[Mode.PREDICT]
             self.predict_step = partial(self._step, mode=Mode.PREDICT)
 
-        # Postprocessing
-        self.postprocessing = postprocessing or {}
-
-    def forward(self, input: Tensor | List[Tensor] | Tuple[Tensor] | dict[str, Tensor]) -> Any:
+    def forward(self, input: Tensor | list[Tensor] | tuple[Tensor] | dict[str, Tensor]) -> Any:
         """
-        Forward pass through the model. Supports multi-input models.
+        Forward pass through the model. If the model's forward method has an `epoch` or `step` argument,
+        it will be automatically passed.
 
         Args:
-            input: The input data.
+            input: Input data.
 
         Returns:
-            Any: The model's output.
+            Any: Model's output.
         """
 
         # Keyword arguments to pass to the forward method
@@ -153,9 +128,6 @@ class System(pl.LightningModule):
             returns dict with loss, metrics, input, target, pred, and id. Loss is None
             for test step, metrics is None if unspecified.
         """
-        # Postprocessing for the batch. Useful for reformatting the batch data into the required format.
-        batch = apply_fns(batch, self.postprocessing["batch"][mode])
-
         # Validate the batch structure.
         try:
             batch = Batch(**batch)
@@ -171,37 +143,20 @@ class System(pl.LightningModule):
         else:
             pred = self(input)
 
-        # Postprocessing for loss calculation.
-        # input = apply_fns(input, self.postprocessing["criterion"][Data.INPUT])
-        # target = apply_fns(target, self.postprocessing["criterion"][Data.TARGET])
-        # pred = apply_fns(pred, self.postprocessing["criterion"][Data.PRED])
-
         # Predict mode stops here.
         if mode == Mode.PREDICT:
-            # Postprocessing for logging/writing.
-            # pred = apply_fns(pred, self.postprocessing["logging"][Data.PRED])
             return {Data.PRED: pred, Data.ID: id}
 
         # Calculate the loss.
         loss = None
         if mode in [Mode.TRAIN, Mode.VAL]:
-            # When target is not provided, pass only the predictions to the criterion.
-            loss = self.criterion(pred) if target is None else self.criterion(pred, target)
-
-        # Postprocessing for metrics.
-        # input = apply_fns(input, self.postprocessing["metrics"][Data.INPUT])
-        # target = apply_fns(target, self.postprocessing["metrics"][Data.TARGET])
-        # pred = apply_fns(pred, self.postprocessing["metrics"][Data.PRED])
+            # The criterion adapter selects and maps the input, target, and/or pred to their corresponding arguments.
+            loss = self.criterion(input=input, pred=pred, target=target)
 
         # Calculate the step metrics.
         metrics = None
         if mode in self.metrics and self.metrics[mode] is not None:
             metrics = self.metrics[mode](pred, target)
-
-        # Postprocessing for logging/writing.
-        # input = apply_fns(input, self.postprocessing["logging"][Data.INPUT])
-        # target = apply_fns(target, self.postprocessing["logging"][Data.TARGET])
-        # pred = apply_fns(pred, self.postprocessing["logging"][Data.PRED])
 
         # Ensure that a dict of losses has a 'total' key.
         if isinstance(loss, dict) and "total" not in loss:
