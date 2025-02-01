@@ -1,0 +1,29 @@
+[data-md-color-scheme="default"] {
+    --md-primary-fg-color:   #459AA3;
+    --md-accent-fg-color:    #459AA3;
+    color:                   #14181e;
+  }
+
+[data-md-color-scheme="slate"] {
+    --md-primary-fg-color:   #459AA3;
+    --md-accent-fg-color:    #459AA3;
+    --md-default-bg-color:   #14181e;
+}
+[data-md-color-scheme="slate"] .md-nav {
+    --md-typeset-a-color: #459AA3;
+}
+
+@media only screen and (min-width: 75.25em) {
+  .md-main__inner {
+    max-width: 1000em;
+  }
+  .md-sidebar--primary {
+    left: 0;
+  }
+  .md-sidebar--secondary {
+    right: 0;
+    margin-left: 0em;
+    -webkit-transform: none;
+    transform: none;   
+  }
+}
