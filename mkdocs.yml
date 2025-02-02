@@ -1,6 +1,5 @@
 site_name: Lighter
 theme:
-  custom_dir: docs/overrides
   icon:
     repo: fontawesome/brands/github
   font:
@@ -19,18 +18,24 @@ theme:
     - navigation.tabs.sticky
 
   palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: fontawesome/solid/circle-half-stroke
+        name: Switch to light mode
+
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default 
       toggle:
-        icon: material/weather-sunny
+        icon: fontawesome/solid/lightbulb
         name: Switch to dark mode
 
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       toggle:
-        icon: material/weather-night
+        icon: fontawesome/solid/moon
         name: Switch to system preference
 
 extra_css:
@@ -57,16 +62,25 @@ plugins:
 
 nav:
   - Home: index.md
-  - Basics:
-    - Quickstart: basics/quickstart.md
-    - Configuration System: basics/config.md
-    - Running workflows: basics/workflows.md
-    - Integrating your projects: basics/projects.md
-
-  - Advanced:
-    - Postprocessing: advanced/postprocessing.md
-    - Inferer: advanced/inferer.md
-    - Callbacks: advanced/callbacks.md
+  - Tutorials:
+      - Configuration Basics: tutorials/01_configuration_basics.md
+      - Image Classification: tutorials/02_image_classification.md
+      - Semantic Segmentation: tutorials/03_semantic_segmentation.md
+      - Transfer Learning: tutorials/04_transfer_learning.md
+      - Multi-task Learning: tutorials/05_multi_task_learning.md
+  - How-To:
+      - Custom Project Modules: how-to/01_custom_project_modules.md
+      - Debugging Config Errors: how-to/02_debugging_config_errors.md
+      - Creating a Custom Metric: how-to/03_creating_a_custom_metric.md
+      - Using Adapters: how-to/04_using_adapters.md
+      - Using and Extending Writers: how-to/05_using_and_extending_writers.md
+      - Using Freezer: how-to/06_using_freezer.md
+      - Implementing a Custom Inferer: how-to/07_implementing_a_custom_inferer.md
+  - Explanation:
+      - Overview: explanation/01_overview.md
+      - Configuration System: explanation/02_configuration_system.md
+      - Adapter System: explanation/03_adapter_system.md
+      - Dynamic Module Loading: explanation/04_dynamic_module_loading.md
   - API Reference: reference/
   
 markdown_extensions:
@@ -87,6 +101,9 @@ markdown_extensions:
   - admonition
   - pymdownx.details
   - pymdownx.superfences      
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 repo_name: project-lighter/lighter
 repo_url: https://github.com/project-lighter/lighter

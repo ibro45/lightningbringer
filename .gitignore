@@ -148,7 +148,7 @@ tensorboard/
 **/predictions/
 test_dir/
 checkpoints/
-prototyping.ipynb
+prototyping*
 .aider*
 *.code-workspace
 .scale_batch_size*

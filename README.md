@@ -2,20 +2,14 @@
 <br/>
 <div align="center">
 <picture>
-  <!-- old code that allows different pics for light/dark mode -->
-  <!--
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/images/lighter_dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="./assets/images/lighter_light.png">
-   -->
-  <img align="center" alt="Lighter logo" src="./assets/images/lighter.png">
+  <img align="center" alt="Lighter logo" src="./assets/images/lighter.png" width="80%">
 </picture>
 </div>
 <br/>
 <br/>
-<br/>
 <div align="center">
 
-[![build](https://github.com/project-lighter/lighter/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/project-lighter/lighter/actions/workflows/build.yml) ![Coverage](./assets/images/coverage.svg) [![GitHub license](https://img.shields.io/github/license/project-lighter/lighter)](https://github.com/project-lighter/lighter/blob/main/LICENSE)
+[![build](https://github.com/project-lighter/lighter/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/project-lighter/lighter/actions/workflows/ci.yml) ![Coverage](./assets/images/coverage.svg) [![GitHub license](https://img.shields.io/github/license/project-lighter/lighter)](https://github.com/project-lighter/lighter/blob/main/LICENSE)
 
 <a href="https://discord.gg/zJcnp6KrUp">
   <img src="https://discord.com/api/guilds/1252251284908539965/widget.png?style=banner2" alt="Lighter Discord Server"/>
@@ -29,15 +23,15 @@
 Focus on your deep learning experiments and forget about (re)writing code. `lighter` is:
  1. **Task-agnostic**
 
-    Whether you’re working on classification, segmentation, or self-supervised learning, `lighter` provides generalized training logic that you can use out-of-the-box.
+    Classification, segmentation, or self-supervised learning? Lighter handles it all.
 
  2. **Configuration-based**
 
-    Easily define, track, and reproduce experiments with `lighter`’s configuration-driven approach, keeping all your hyperparameters organized.
+    Define, adjust, and reproduce experiments through configuration files.
 
  3. **Customizable**
 
-    Seamlessly integrate your custom models, datasets, or transformations into `lighter`’s flexible framework.
+    Integrate custom code seamlessly, whether it's models, datasets, or any other component.
 
 &nbsp;
 
@@ -61,15 +55,22 @@ Focus on your deep learning experiments and forget about (re)writing code. `ligh
 <b>Install:</b>
 <pre><code>pip install project-lighter</code></pre>
 <details>
-<summary><b>Pre-release (up-to-date with the main branch):</b></summary>
-<pre><code>pip install project-lighter --pre</code></pre>
+
+<summary><b>Install pre-release</b></summary>
+<p>Get the latest features and fixes from the main branch.</p>
+<pre>
+<code>pip install project-lighter --pre</code>
+</pre>
 </details>
 
 <details>
-<summary><b>For development:</b></summary>
-<pre><code>make setup
+<summary><b>Development:</b></summary>
+<p>To contribute to the project, clone the repository and run the following commands. Also, refer to the <a href="CONTRIBUTING.md">contributing guide</a>.</p>
+<pre>
+<code>make setup
 make install             # Install lighter via uv
-make pre-commit-install  # Set up the pre-commit hook for code formatting
+make pre-commit-install  # Set up the pre-commit hook for code formatting</code>
+</pre>
 </details>
 <br/>
 
